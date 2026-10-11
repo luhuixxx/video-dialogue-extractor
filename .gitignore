@@ -14,7 +14,3 @@ artifacts/
 *.mov
 *.avi
 *.npz
-outputs/
-artifacts/*.mp4
-artifacts/*.wav
-artifacts/*.npz

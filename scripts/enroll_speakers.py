@@ -16,12 +16,12 @@ import sys
 import tempfile
 
 import numpy as np
-from resemblyzer import VoiceEncoder, preprocess_wav
+from resemblyzer import preprocess_wav
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from video_dialogue_extractor.media import extract_audio
-from video_dialogue_extractor.speakers import save_profiles
+from video_dialogue_extractor.speakers import create_voice_encoder, save_profiles
 
 
 def parse_interval(value: str) -> tuple[float, float]:
@@ -41,7 +41,7 @@ def main() -> int:
     parser.add_argument("--interval", action="append", required=True, type=parse_interval,
                         metavar="START,END", help="one clean speech interval per role")
     args = parser.parse_args()
-    encoder = VoiceEncoder()
+    encoder = create_voice_encoder()
     names: list[str] = []
     centers: list[np.ndarray] = []
     with tempfile.TemporaryDirectory(prefix="video-enroll-") as temp_dir:

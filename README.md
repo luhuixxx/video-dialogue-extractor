@@ -31,6 +31,17 @@ python -m pip install -e .
 
 Linux 和 macOS 使用 `source .venv/bin/activate` 激活环境。`--device auto` 会检查显卡与当前 PyTorch 构建是否兼容；不兼容时自动使用 CPU。
 
+模型缓存建议统一放在独立的数据盘目录，例如 `D:\\program\\ai-models`。缓存位置通过当前用户的环境变量管理，不写死在源码中：
+
+```powershell
+[Environment]::SetEnvironmentVariable('MODELSCOPE_CACHE', 'D:\\program\\ai-models\\modelscope', 'User')
+[Environment]::SetEnvironmentVariable('HF_HOME', 'D:\\program\\ai-models\\huggingface', 'User')
+[Environment]::SetEnvironmentVariable('TORCH_HOME', 'D:\\program\\ai-models\\torch', 'User')
+[Environment]::SetEnvironmentVariable('VIDEO_DIALOGUE_RESEMBLYZER_WEIGHTS', 'D:\\program\\ai-models\\resemblyzer\\pretrained.pt', 'User')
+```
+
+设置后请重新打开终端。项目代码只读取这些变量，不包含任何特定电脑的绝对路径。
+
 ## 转写视频
 
 没有说话人样本时，程序会自动聚类并估计 2 到 6 个角色：

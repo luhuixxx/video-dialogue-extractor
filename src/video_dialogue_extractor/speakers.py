@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import json
+import os
 from pathlib import Path
 from typing import Iterable
 
@@ -30,6 +31,22 @@ class SpeakerSegment:
     end: float
     label: int
     confidence: float
+
+
+def create_voice_encoder(device: str = "cpu"):
+    """Create a Resemblyzer encoder, optionally using a managed local weight file."""
+    from resemblyzer import VoiceEncoder
+
+    configured = os.environ.get("VIDEO_DIALOGUE_RESEMBLYZER_WEIGHTS")
+    if configured:
+        weights = Path(configured).expanduser()
+        if not weights.is_file():
+            raise FileNotFoundError(
+                f"Resemblyzer weights not found: {weights}. "
+                "Unset VIDEO_DIALOGUE_RESEMBLYZER_WEIGHTS or fix the path."
+            )
+        return VoiceEncoder(device=device, weights_fpath=str(weights))
+    return VoiceEncoder(device=device)
 
 
 def _normalize(rows: np.ndarray) -> np.ndarray:
@@ -62,9 +79,7 @@ def save_profile_metadata(path: str | Path, profiles: Iterable[SpeakerProfile]) 
 def extract_voice_embeddings(audio: np.ndarray, window_seconds: float, stride_seconds: float,
                              min_speech_rms: float, device: str) -> tuple[np.ndarray, np.ndarray]:
     """Extract normalized embeddings and their start times from speech-like windows."""
-    from resemblyzer import VoiceEncoder
-
-    encoder = VoiceEncoder(device=device)
+    encoder = create_voice_encoder(device)
     sample_rate = 16000
     size = max(1, int(window_seconds * sample_rate))
     step = max(1, int(stride_seconds * sample_rate))
@@ -159,9 +174,7 @@ class VoiceSegmenter:
         self.device = device
 
     def _encoder(self):
-        from resemblyzer import VoiceEncoder
-
-        return VoiceEncoder(device=self.device)
+        return create_voice_encoder(self.device)
 
     def windows_from_embeddings(self, embeddings: np.ndarray, positions: np.ndarray,
                                 sample_rate: int = 16000) -> list[SpeakerWindow]:
