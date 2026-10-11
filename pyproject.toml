@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "video-dialogue-extractor"
+version = "0.1.0"
+description = "Chinese-first video transcription with dynamic speaker diarization and subtitle segmentation"
+requires-python = ">=3.10"
+dependencies = [
+  "funasr>=1.4",
+  "numpy>=1.24",
+  "opencv-python>=4.8",
+  "resemblyzer>=0.1.4",
+  "scikit-learn>=1.3",
+  "soundfile>=0.12",
+]
+
+[project.scripts]
+video-extract = "video_dialogue_extractor.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
